@@ -1,6 +1,6 @@
-Scalp 360 is a fork of nanopony's fork of the GoogleCode-based developed on behalf of BalloonPlanet.com. Our aim is to automate the process of scalping apache logs, sending the results by email.
+Scalp 360! is a fork of nanopony's fork of the GoogleCode-based developed on behalf of BalloonPlanet.com. Our aim is to automate the process of scalping apache logs, sending the results by email.
 
-# Scalp!
+# Scalp 360!
 
 Scalp! is a log analyzer for the Apache web server that aims to look for security problems developed by Romain Gaucher. The main idea is to look through huge log files and extract the possible attacks that have been sent through HTTP/GET (By default, Apache does not log the HTTP/POST variable).
 
