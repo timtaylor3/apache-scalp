@@ -1,0 +1,10 @@
+# Copy this to config.py and modify its contents.
+
+email_config = {
+    'host': 'smtp.gmail.com',
+    'port': '587',
+    'username': '',
+    'password': '',
+    'from_address': 'no-reply@localhost',
+    'recipients': ['']
+}
