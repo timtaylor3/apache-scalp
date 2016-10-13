@@ -9,10 +9,10 @@ default_filters.xml is a part of PHP IDS project;
 ## How it works
 Scalp is basically using the regular expression from the PHP-IDS project and matches the lines from the Apache access log file. These regexp has been chosen because of their quality and the top activity of the team maintaining that project.
 
-You will then need latest version of this file https://dev.itratos.de/projects/php-ids/repository/raw/trunk/lib/IDS/default_filter.xml in order to run Scalp. (actually, Scalp! can even download it for you :3 )
-
-### Usage
+### How to use
 Scalp has a couple of options that may be useful in order to save time when scalping a huge log file or in order to perform a full examination; the default options are almost okay for log files of hundreds of MB.
+
+Edit the config file under scalp/config.py.example with your email server data and save as example/config.py
 
 Current options:
 - exhaustive: Won't stop at the first pattern matched, but will test all the patterns
@@ -20,10 +20,7 @@ Current options:
 - period: Specify a time-frame to look at, all the rest will be ignored
 - sample: Does a random sampling of the log lines in order to look at a certain percentage, this is useful when the user doesn't want to do a full scan of all the log, but just ping it to see if there is some problem...
 - attack: Specify what classes of vulnerabilities the tool will look at (eg, look only for XSS, SQL Injection, etc.)
-Example of utilization:
 
-    ./scalp-0.4.py -l /var/log/httpd_log -f ./default_filter.xml -o ./scalp-output --html
+Run or setup the following as a cron task:
 
-### Help
-
-    rgaucher@plop:~/work/scalp/branches$ ./scalp-0.4.py --help
+    python ./scalp.py -l /var/log/httpd_log -f ./default_filter.xml -o ./scalp-output --email
