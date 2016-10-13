@@ -23,9 +23,10 @@ def send_email(email_config=None, file=None):
 
     # Setup mail credentials
     try:
-        smtp = smtplib.SMTP('{0}:{1}'.format(server, port))
+        smtp = smtplib.SMTP_SSL('{0}:{1}'.format(server, port))
     except Exception as e:
-        print ('Unable to crate an SMTP object from server:port. %s' % str(e))
+        print ('Unable to crate an SMTP_SSL object from server:port. %s' 
+                % str(e))
         return False
 
     # Create message object
