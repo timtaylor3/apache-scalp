@@ -1,41 +1,47 @@
 #!/usr/bin/env python
-"""
-    Scalp! Apache log based attack analyzer
-    by Romain Gaucher <r@rgaucher.info> - http://rgaucher.info
-                                          http://code.google.com/p/apache-scalp
-
-
-    Copyright (c) 2008 Romain Gaucher <r@rgaucher.info>
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
-    EXTERNAL DEVELOPER NOTES:
-        10052008: Don C. Weber
-            Fixed XML header by putting comment after XML version line.
-                - This was necessary so that Firefox recognized the file as XML and
-                displayed it properly.  Proper display allows for sections to be
-                collapsed for easy viewing.
-        10062008: Don C. Weber
-            Added Regexp to the XML output.  Also added this to the DTD
-        12312008: Don C. Weber
-            Added IP and Subnet exclusion capability to cmd line input and scalper function
 
 """
-from __future__ import with_statement
+Scalp! Apache log based attack analyzer
+by Romain Gaucher <r@rgaucher.info> - http://rgaucher.info
+                                      http://code.google.com/p/apache-scalp
+
+Copyright (c) 2008 Romain Gaucher <r@rgaucher.info>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+EXTERNAL DEVELOPER NOTES:
+    10132016: Joshua Wedekind
+        Added email notification option.
+    10052008: Don C. Weber
+        Fixed XML header by putting comment after XML version line.
+            - This was necessary so that Firefox recognized the file as XML and
+            displayed it properly.  Proper display allows for sections to be
+            collapsed for easy viewing.
+    10062008: Don C. Weber
+        Added Regexp to the XML output.  Also added this to the DTD
+    12312008: Don C. Weber
+        Added IP and Subnet exclusion capability to cmd line input and scalper function
+
+"""
+from __future__ import with_statement, absolute_import
 import time, base64
-import os,sys,random
+import os, sys, random
 
-import regex as re
+try:
+    import re
+except ImportError:
+    # For legacy compatibility
+    import regex as re
 
 try:
     from lxml import etree
@@ -47,6 +53,19 @@ except ImportError:
             import xml.etree.ElementTree as etree
         except ImportError:
             print("Cannot find the ElementTree in your python packages")
+
+from notify import send_email
+try:
+    from config import email_config
+except ImportError:
+    print("Cannot import config.py. Create it from config.py.example to " +
+        "send emails.")
+
+try:
+    # Python 2
+    input = raw_input
+except NameError:
+    pass
 
 __application__ = "scalp"
 __version__     = "0.5"
@@ -282,7 +301,7 @@ def scalper(access, filters, preferences = [], output = "text"):
 
         ans = input("Do you want me to download it? [y]/n: ")
         if ans in ["", "y", "Y"]:
-            import urllib.request
+            from six.moves import urllib
             urllib.request.urlretrieve(PHPIDC_DEFAULT_XML_URL, filters)
         else:
             return
@@ -402,15 +421,20 @@ def scalper(access, filters, preferences = [], output = "text"):
     print("\tFound %d attack patterns in %f s" % (n,tt))
 
     short_name = access[access.rfind(os.sep)+1:]
-    if n > 0:
-        print("Generating output in %s%s%s_scalp_*" % (preferences['odir'],os.sep,short_name))
+    if n >= 0:
+        print("Generating output in %s%s%s_scalp_*" % (preferences['odir'],
+                os.sep,short_name))
         if 'html' in preferences['output']:
-            generate_html_file(flag, short_name, filters, preferences['odir'])
+            html_file = generate_html_file(flag, short_name, filters,
+                    preferences['odir'])
+            if 'email' in preferences['output']:
+                print("Sending email using config.py settings.")
+                send_email(email_config=email_config, file=html_file)
         elif 'text' in preferences['output']:
             generate_text_file(flag, short_name, filters, preferences['odir'])
         elif 'xml' in preferences['output']:
             generate_xml_file(flag, short_name, filters, preferences['odir'])
-
+    
     # generate exceptions
     if len(diff) > 0:
         o_except = open(os.path.abspath(preferences['odir'] + os.sep + "scalp_except.txt"), "w")
@@ -513,7 +537,7 @@ def generate_html_file(flag, access, filters, odir):
         out.close()
     except IOError:
         print("Cannot open the file:", fname)
-    return
+    return fname
 
 months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -585,6 +609,7 @@ def help():
     print("                     ex: 04/Apr/2008:15:45;*/Mai/2008")
     print("                     if not specified at the end, the max or min are taken")
     print("   --html      |-h:  generate an HTML output")
+    print("   --email     |-m:  generate HTML output and send via email")
     print("   --xml       |-x:  generate an XML output")
     print("   --text      |-t:  generate a simple text output (default)")
     print("   --except    |-c:  generate a file that contains the non examined logs due to the")
@@ -593,7 +618,7 @@ def help():
     print("                     list: xss, sqli, csrf, dos, dt, spam, id, ref, lfi")
     print("                     the list of attacks should not contains spaces and comma separated")
     print("                     ex: xss,sqli,lfi,ref")
-    print("   --ignore-ip|-i:  specify the list of IP Addresses to look exclude")
+    print("   --ignore-ip|-i:   specify the list of IP Addresses to look exclude")
     print("                     the list of IP Addresses should be comma separated and not contain spaces")
     print("                     This option can be used in conjunction with --ignore-ip")
     print("   --ignore-subnet|-n:  specify the list of Subnets to look exclude")
@@ -649,6 +674,8 @@ def main(argc, argv):
                     preferences['exhaustive'] = True
                 elif s in ("--html", "-h"):
                     preferences['output'] += ",html"
+                elif s in ("--email", "-m"):
+                    preferences['output'] += ",html,email"
                 elif s in ("--xml", "-x"):
                     preferences['output'] += ",xml"
                 elif s in ("--text", "-t"):
@@ -679,7 +706,8 @@ def main(argc, argv):
                 os.mkdir(preferences['odir'])
         scalper(access, filters, preferences)
 
-if __name__ == "__main__":
+if __name__ == "__main__" and __package__ is None:
+    __package__ = 'scalp'
     main(len(sys.argv), sys.argv)
     """
     import hotshot
