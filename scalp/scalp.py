@@ -421,7 +421,7 @@ def scalper(access, filters, preferences = [], output = "text"):
     print("\tFound %d attack patterns in %f s" % (n,tt))
 
     short_name = access[access.rfind(os.sep)+1:]
-    if n >= 0:
+    if n > 0:
         print("Generating output in %s%s%s_scalp_*" % (preferences['odir'],
                 os.sep,short_name))
         if 'html' in preferences['output']:
@@ -528,8 +528,7 @@ def generate_html_file(flag, access, filters, odir):
                 for e in flag[attack_type][i]:
                     out.write(" <div class='block highlight'>\n")
                     out.write("  Reason: <span class='reason'>%s</span><br />\n" % html_entities(e[2]))
-                    out.write("  <span class='line'><b>Log line:</b>%s</span><br />\n" % html_entities(e[0][5]))
-                    out.write("  <span class='regexp'><b>Matching Regexp:</b>%s</span>\n" % html_entities(e[1]))
+                    out.write(" <span class='line'><b>Log line: </b>%s</span><br />\n" % html_entities(e[3]))
                     out.write(" </div>\n")
                 out.write("</div>\n")
             out.write("<br />\n")
