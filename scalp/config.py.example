@@ -5,6 +5,6 @@ email_config = {
     'port': '587',
     'username': '',
     'password': '',
-    'from_address': 'no-reply@localhost',
+    'from': 'no-reply@localhost',
     'recipients': ['']
 }
