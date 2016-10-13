@@ -5,20 +5,20 @@ from email.mime.text import MIMEText
 from email.utils import formatdate
 
 
-def send_email(mail_dict=None, file=None):
+def send_email(email_config=None, file=None):
     """
     Helper method to send email notifications containing scalp output files.
     """
-    if mail_dict is None or file is None:
+    if email_config is None or file is None:
         print ('Requires email credentials and file location.')
         return False
-    # Get data from mail_dict
-    server = mail_dict.get('host', 'localhost')
-    port = mail_dict.get('port', '587')
-    username = mail_dict.get('username', '')
-    password = mail_dict.get('password', '')
-    from_address = mail_dict.get('from', 'no-reply@localhost')
-    recipients = mail_dict.get('recipients', [])
+    # Get data from email_config
+    server = email_config.get('host', 'localhost')
+    port = email_config.get('port', '587')
+    username = email_config.get('username', '')
+    password = email_config.get('password', '')
+    from_address = email_config.get('from', 'no-reply@localhost')
+    recipients = email_config.get('recipients', [])
     todays_date = formatdate(localtime=True)
 
     # Setup mail credentials
@@ -40,9 +40,9 @@ def send_email(mail_dict=None, file=None):
     # Attach file to email
     try:
         with open(file, 'rb') as html:
-            msg.attach(MIMEText(html.read(), 'html'))
+            msg.attach(MIMEText(bytes.decode(html.read()), 'html'))
     except Exception as e:
-        print ('Unable to attach HTML file to email message. %s' & str(e))
+        print ('Unable to attach HTML file to email message. %s' % str(e))
         return False
 
     # Start smtp authentication
