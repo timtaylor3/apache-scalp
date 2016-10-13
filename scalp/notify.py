@@ -40,7 +40,7 @@ def send_email(email_config=None, file=None):
 
      # Setup mail server connection
     try:
-        smtp = smtplib.SMTP('{0}:{1}'.format(server+'lkjl', port))
+        smtp = smtplib.SMTP('{0}:{1}'.format(server, port))
         # Uncomment to show debug info.
         # smtp.set_debuglevel(1)
         smtp.starttls()
