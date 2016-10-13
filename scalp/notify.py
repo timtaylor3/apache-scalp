@@ -21,13 +21,6 @@ def send_email(email_config=None, file=None):
     recipients = email_config.get('recipients', [])
     todays_date = formatdate(localtime=True)
 
-    # Setup mail credentials
-    try:
-        smtp = smtplib.SMTP('{0}:{1}'.format(server, port))
-    except Exception as e:
-        print ('Unable to crate an SMTP object from server:port. %s' % str(e))
-        return False
-
     # Create message object
     msg = MIMEMultipart('alternative')
     msg['From'] = from_address
@@ -45,9 +38,26 @@ def send_email(email_config=None, file=None):
         print ('Unable to attach HTML file to email message. %s' % str(e))
         return False
 
+     # Setup mail server connection
+    try:
+        smtp = smtplib.SMTP('{0}:{1}'.format(server+'lkjl', port))
+        # Uncomment to show debug info.
+        # smtp.set_debuglevel(1)
+        smtp.starttls()
+    except Exception as e:
+        print ('Unable to crate an SMTP tls object from server:port. %s' 
+                % str(e))
+        try:
+            smtp = smtplib.SMTP_SSL('{0}:{1}'.format(server, port))
+            # Uncomment to show debug info.
+            # smtp.set_debuglevel(1)
+        except Exception as e:
+            print ('Unable to crate an SMTP_SSL object from server:port. %s' 
+                    % str(e))
+            return False
+
     # Start smtp authentication
     try:
-        smtp.starttls()
         smtp.login(username, password)
     except Exception as e:
         print ('Cannot authenticate with username and password. %s' % str(e))
