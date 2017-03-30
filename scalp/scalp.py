@@ -124,7 +124,7 @@ h2 { display: block; font-size: 1.5em; font-weight: 700; background-color: #efef
 #footer {text-align: center;}
 </style></head><body>"""
 
-html_footer = "<div id='footer'>Scalp by Romain Gaucher &lt;r@rgaucher.info&gt; - <a href='http://rgaucher.info'>http://rgaucher.info</a></div></body></html>"
+html_footer = "<div id='footer'>Scalp 360! based on Scalp by Romain Gaucher &lt;r@rgaucher.info&gt; with features and filter mods by BalloonPlanet Developers - <a href='https://github.com/BalloonPlanet/apache-scalp'>https://github.com/BalloonPlanet/</a></div></body></html>"
 
 class object_dict(dict):
     def __init__(self, initd=None):
@@ -434,7 +434,7 @@ def scalper(access, filters, preferences = [], output = "text"):
             generate_text_file(flag, short_name, filters, preferences['odir'])
         elif 'xml' in preferences['output']:
             generate_xml_file(flag, short_name, filters, preferences['odir'])
-    
+
     # generate exceptions
     if len(diff) > 0:
         o_except = open(os.path.abspath(preferences['odir'] + os.sep + "scalp_except.txt"), "w")
