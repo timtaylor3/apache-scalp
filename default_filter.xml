@@ -41,8 +41,8 @@
     </filter>
     <filter>
         <id>5</id>
-        <rule><![CDATA[(?:\W\s*hash\s*[^\w\s-])|(?:\w=\W*[^,]*,[^\s(]\s*\()|(?:\?"[^\s"]":)|(?:(?<!\/)__[a-z]+__)|(?:(?:^|[\s)\]\}])(?:s|g)etter\s*=)]]></rule>
-        <description>Detects hash-contained xss payload attacks, setter usage and property overloading</description>
+        <rule><![CDATA[(?:\w=\W*[^,]*,[^\s(]\s*\()|(?:\?"[^\s"]":)|(?:(?<!\/)__[a-z]+__)|(?:(?:^|[\s)\]\}])(?:s|g)etter\s*=)]]></rule>
+        <description>Detects setter usage and property overloading</description>
         <tags>
             <tag>xss</tag>
             <tag>csrf</tag>
