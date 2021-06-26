@@ -485,7 +485,12 @@ def generate_xml_file(flag, access, filters, odir):
                 name = " name=\"%s\"" % names[attack_type]
             out.write("  <attack type=\"%s\"%s>\n" % (attack_type, name))
             impacts = flag[attack_type].keys()
-            impacts.sort(reverse=True)
+            # Original line crashes in python 3.9
+            # impacts.sort(reverse=True)
+            impacts = sorted(impacts, reverse=True)
+            
+            
+            
             for i in impacts:
                 out.write("    <impact value=\"%d\">\n" % int(i))
                 for e in flag[attack_type][i]:
@@ -519,7 +524,10 @@ def generate_html_file(flag, access, filters, odir):
                 continue
             out.write("  <h2>%s (%s)</h2>\n" % (attack_type, name))
             impacts = flag[attack_type].keys()
-            impacts.sort(reverse=True)
+            # Original line crashes in python 3.9
+            # impacts.sort(reverse=True)
+            impacts = sorted(impacts, reverse=True)
+            
             # order by impact
             for i in impacts:
                 out.write("<div class='match impact-%d'>\n" % int(i))
