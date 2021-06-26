@@ -484,12 +484,8 @@ def generate_xml_file(flag, access, filters, odir):
             if attack_type in names:
                 name = " name=\"%s\"" % names[attack_type]
             out.write("  <attack type=\"%s\"%s>\n" % (attack_type, name))
-            impacts = flag[attack_type].keys()
-            # Original line crashes in python 3.9
-            # impacts.sort(reverse=True)
-            impacts = sorted(impacts, reverse=True)
-            
-            
+            impacts = list(flag[attack_type].keys())
+            impacts.sort(reverse=True)
             
             for i in impacts:
                 out.write("    <impact value=\"%d\">\n" % int(i))
@@ -523,10 +519,8 @@ def generate_html_file(flag, access, filters, odir):
             if len(flag[attack_type].values()) < 1:
                 continue
             out.write("  <h2>%s (%s)</h2>\n" % (attack_type, name))
-            impacts = flag[attack_type].keys()
-            # Original line crashes in python 3.9
-            # impacts.sort(reverse=True)
-            impacts = sorted(impacts, reverse=True)
+            impacts = list(flag[attack_type].keys())
+            impacts.sort(reverse=True)
             
             # order by impact
             for i in impacts:
